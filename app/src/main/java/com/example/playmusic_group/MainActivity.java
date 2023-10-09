@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     ArrayList<BaiHat> arrayBaiHat;
-    
+
     TextView txtTitle, txtTimeStart, txtTimeEnd;
     SeekBar skBar;
     ImageButton btnPre, btnStop, btnPlay, btnNext;
@@ -37,25 +37,6 @@ public class MainActivity extends AppCompatActivity {
                 }else{
                     mediaPlayer.start();
                     btnPlay.setImageResource(R.drawable.pause);
-                }
-            }
-        });
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(mediaPlayer.isPlaying()){
-                    mediaPlayer.stop();
-                    btnPlay.setImageResource(R.drawable.pause);
-                    index += 1;
-                    PlayMusic();
-                    mediaPlayer.start();
-                    btnPlay.setImageResource(R.drawable.play);
-                }else {
-                    index += 1;
-
-                    PlayMusic();
-                    mediaPlayer.start();
-                    btnPlay.setImageResource(R.drawable.play);
                 }
             }
         });
