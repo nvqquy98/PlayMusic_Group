@@ -26,19 +26,19 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginLeft="30dp"
+        android:layout_marginLeft="70dp"
         android:layout_marginBottom="50dp"
         android:background="@null"
-        android:src="@drawable/previous" />
+        android:src="@drawable/pre" />
 
     <ImageButton
         android:id="@+id/buttonStop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginLeft="50dp"
+        android:layout_marginRight="40dp"
         android:layout_marginBottom="50dp"
-        android:layout_toRightOf="@id/buttonPre"
+        android:layout_toLeftOf="@id/buttonNext"
         android:background="@null"
         android:src="@drawable/stop" />
 
@@ -47,8 +47,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@id/buttonNext"
-        android:layout_marginRight="50dp"
+        android:layout_toRightOf="@id/buttonPre"
+        android:layout_marginLeft="40dp"
         android:layout_marginBottom="50dp"
         android:background="@null"
         android:src="@drawable/play" />
@@ -59,7 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginRight="30dp"
+        android:layout_marginRight="70dp"
         android:layout_marginBottom="50dp"
         android:background="@null"
         android:src="@drawable/next" />
