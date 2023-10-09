@@ -94,13 +94,13 @@ public class MainActivity extends AppCompatActivity {
         arrayBaiHat.add(new BaiHat("Nếu Phôi Pha Ngày Mai - Đan Trường",R.raw.phoi_phai));
         arrayBaiHat.add(new BaiHat("Anh Đã Quen Với Cô Đơn - Sobin Hoàng Sơn",R.raw.anh_da_quen_voi_co_don));
         arrayBaiHat.add(new BaiHat("Buông Đôi Tay Nhau Ra - Sơn Tùng MTP",R.raw.buong_doi_tay_nhau_ra));
-        arrayBaiHat.add(new BaiHat("Có Chàng Trai Viết Lên Cây",R.raw.co_chang_trai_viet_len_cay));
+        arrayBaiHat.add(new BaiHat("Có Chàng Trai Viết Lên Cây - Phan Mạnh Quỳnh",R.raw.co_chang_trai_viet_len_cay));
         arrayBaiHat.add(new BaiHat("Gửi Anh Xa Nhớ - Bích Phương ",R.raw.gui_anh_xa_nho));
         arrayBaiHat.add(new BaiHat("Như Phút Ban Đầu - Noo Phước Thịnh",R.raw.nhu_phut_ban_dau));
         arrayBaiHat.add(new BaiHat("Việt Nam Những Chuyến Đi - Vicky Nhung",R.raw.viet_nam_va_nhung_chuyen_di));
         arrayBaiHat.add(new BaiHat("Vợ Người Ta - Phan Mạnh Quỳnh",R.raw.vo_nguoi_ta));
-        arrayBaiHat.add(new BaiHat("Yêu Một Người Vô Tâm",R.raw.yeu_mot_nguoi_vo_tam));
-        arrayBaiHat.add(new BaiHat("Yêu Nhau Nửa Ngày",R.raw.yeu_nhau_nua_ngay));
+        arrayBaiHat.add(new BaiHat("Yêu Một Người Vô Tâm - Bảo Anh",R.raw.yeu_mot_nguoi_vo_tam));
+        arrayBaiHat.add(new BaiHat("Yêu Nhau Nửa Ngày - Phan Mạnh Quỳnh",R.raw.yeu_nhau_nua_ngay));
     }
 
     private void AnhXa() {
