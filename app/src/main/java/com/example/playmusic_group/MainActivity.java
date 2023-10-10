@@ -4,12 +4,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -18,8 +23,11 @@ public class MainActivity extends AppCompatActivity {
     TextView txtTitle, txtTimeStart, txtTimeEnd;
     SeekBar skBar;
     ImageButton btnPre, btnStop, btnPlay, btnNext;
+    ImageView music_compact;
     MediaPlayer mediaPlayer;
+    Animation animation;
     int index = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         AnhXa();
         AddBaiHat();
         PlayMusic();
+        animation = AnimationUtils.loadAnimation(this, R.anim.rotate);
         btnPre.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -41,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
                 PlayMusic();
                 mediaPlayer.start();
                 btnPlay.setImageResource(R.drawable.pause);
+                music_compact.startAnimation(animation);
+                SetTimeEnd();
+                UpdateTime();
             }
         });
         btnNext.setOnClickListener(new View.OnClickListener() {
@@ -56,6 +68,9 @@ public class MainActivity extends AppCompatActivity {
                 PlayMusic();
                 mediaPlayer.start();
                 btnPlay.setImageResource(R.drawable.pause);
+                music_compact.startAnimation(animation);
+                SetTimeEnd();
+                UpdateTime();
             }
         });
         btnStop.setOnClickListener(new View.OnClickListener() {
@@ -65,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
                 mediaPlayer.release();
                 btnPlay.setImageResource(R.drawable.play);
                 PlayMusic();
+                UpdateTime();
+                music_compact.clearAnimation();
             }
         });
         btnPlay.setOnClickListener(new View.OnClickListener(){
@@ -73,12 +90,66 @@ public class MainActivity extends AppCompatActivity {
                 if(mediaPlayer.isPlaying()){
                     mediaPlayer.pause();
                     btnPlay.setImageResource(R.drawable.play);
+                    music_compact.clearAnimation();
                 }else{
                     mediaPlayer.start();
                     btnPlay.setImageResource(R.drawable.pause);
+                    music_compact.startAnimation(animation);
                 }
+                SetTimeEnd();
+                UpdateTime();
             }
         });
+        skBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mediaPlayer.seekTo(skBar.getProgress());
+            }
+        });
+    }
+    private void UpdateTime(){
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                SimpleDateFormat time = new SimpleDateFormat("mm:ss");
+                txtTimeStart.setText(time.format(mediaPlayer.getCurrentPosition()));
+                skBar.setProgress(mediaPlayer.getCurrentPosition());
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        index ++;
+                        if(index > arrayBaiHat.size() - 1){
+                            index = 0;
+                        }
+                        if(mediaPlayer.isPlaying()){
+                            mediaPlayer.stop();
+                        }
+                        PlayMusic();
+                        mediaPlayer.start();
+                        btnPlay.setImageResource(R.drawable.pause);
+                        SetTimeEnd();
+                        UpdateTime();
+                    }
+                });
+                handler.postDelayed(this, 500);
+            }
+        }, 100);
+    }
+    private void SetTimeEnd(){
+        SimpleDateFormat time = new SimpleDateFormat("mm:ss");
+        txtTimeEnd.setText(time.format(mediaPlayer.getDuration()));
+        skBar.setMax(mediaPlayer.getDuration());
     }
 
     private void PlayMusic() {
@@ -112,5 +183,6 @@ public class MainActivity extends AppCompatActivity {
         btnStop         = (ImageButton) findViewById(R.id.buttonStop);
         btnPlay         = (ImageButton) findViewById(R.id.buttonPlay);
         btnNext         = (ImageButton) findViewById(R.id.buttonNext);
+        music_compact   = (ImageView) findViewById(R.id.musicCompact);
     }
 }
