@@ -4,10 +4,21 @@ import java.io.File;
 
 public class BaiHat {
     private String TenBaiHat;
+    private String TenCaSi;
     private int File;
 
-    public BaiHat(String tenBaiHat, int file) {
+
+    public String getTenCaSi() {
+        return TenCaSi;
+    }
+
+    public void setTenCaSi(String tenCaSi) {
+        TenCaSi = tenCaSi;
+    }
+
+    public BaiHat(String tenBaiHat, String tenCaSi, int file) {
         TenBaiHat = tenBaiHat;
+        TenCaSi = tenCaSi;
         File = file;
     }
 

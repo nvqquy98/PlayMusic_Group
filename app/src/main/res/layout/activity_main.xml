@@ -12,57 +12,63 @@
         android:layout_marginTop="20dp"
         android:padding="10dp"
         android:textColor="@color/white"
-        android:textSize="22sp"
+        android:textSize="17dp"
         android:textAlignment="center"
-        android:text="DN MUSIC - Nhạc Việt"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="250dp"
+        android:text="Bài hát đươ yêu thích nhất"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/textViewSinger"
+        android:padding="10dp"
+        android:textColor="@color/white"
+        android:textSize="14dp"
+        android:textAlignment="center"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="220dp"
+        android:text="Ca sĩ giấu mặt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
 
 
     <ImageButton
         android:id="@+id/buttonPre"
 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginLeft="50dp"
-        android:layout_marginBottom="50dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginBottom="90dp"
         android:background="@null"
-        android:src="@drawable/pre" />
-
-    <ImageButton
-        android:id="@+id/buttonStop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginRight="25dp"
-        android:layout_marginBottom="50dp"
-        android:layout_toLeftOf="@id/buttonNext"
-        android:background="@null"
-        android:src="@drawable/stop" />
+        android:src="@drawable/pre"
+        android:scaleType="centerInside"/>
 
     <ImageButton
         android:id="@+id/buttonPlay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@id/buttonPre"
-        android:layout_marginLeft="25dp"
-        android:layout_marginBottom="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="80dp"
         android:background="@null"
-        android:src="@drawable/play" />
+        android:src="@drawable/play"
+        android:scaleType="centerInside"/>
 
     <ImageButton
         android:id="@+id/buttonNext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginRight="50dp"
-        android:layout_marginBottom="50dp"
+        android:layout_marginRight="100dp"
+        android:layout_marginBottom="90dp"
         android:background="@null"
-        android:src="@drawable/next" />
+        android:src="@drawable/next"
+        android:scaleType="centerInside"/>
 
     <SeekBar
         android:id="@+id/seekBar"
@@ -73,9 +79,9 @@
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:layout_marginBottom="120dp"
-        android:progressTint="@color/white"
-        android:thumbTint="#FFA500"/>
+        android:layout_marginBottom="170dp"
+        android:progressTint="#FFA500"
+        android:thumbTint="@color/white"/>
 
     <TextView
         android:id="@+id/textViewTimeStart"
@@ -85,10 +91,10 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="30dp"
-        android:layout_marginBottom="150dp"
+        android:layout_marginBottom="200dp"
         android:text="00:00"
-        android:textColor="#000000"
-        android:textSize="20dp" />
+        android:textColor="@color/white"
+        android:textSize="15dp" />
 
     <TextView
         android:id="@+id/textViewTimeEnd"
@@ -97,18 +103,35 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:layout_marginRight="30dp"
-        android:layout_marginBottom="150dp"
+        android:layout_marginBottom="200dp"
         android:text="00:00"
-        android:textColor="#000000"
-        android:textSize="20dp" />
-
+        android:textColor="@color/white"
+        android:textSize="15dp" />
     <ImageView
         android:id="@+id/musicCompact"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:layout_centerInParent="true"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="320dp"
+        android:layout_marginLeft="170dp"
         app:srcCompat="@drawable/music_compact"
+        android:scaleType="centerInside"
         />
+
+    <ImageView
+        android:id="@+id/musicCompactGround"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="370dp"
+        android:layout_marginRight="80dp"
+        app:srcCompat="@drawable/music_compact_ground"
+        android:scaleType="centerInside"
+        />
+
+
 
 
 </RelativeLayout>
