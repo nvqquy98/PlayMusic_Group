@@ -221,8 +221,10 @@ public class MainActivity extends AppCompatActivity {
                             UpdateTime();
                         }
                         if(lap % 3 == 0 && tron % 2 == 0){
+                            mediaPlayer.start();
                             btnPlay.setImageResource(R.drawable.play);
                             music_compact.clearAnimation();
+                            mediaPlayer.stop();
                         }
                         if(lap % 3 == 0 && tron % 2 == 1){
                             index = random.nextInt(arrayBaiHat.size());
