@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 index --;
+
                 if (index < 0){
                     index = arrayBaiHat.size() - 1;
                 }
