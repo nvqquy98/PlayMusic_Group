@@ -41,37 +41,69 @@ public class MainActivity extends AppCompatActivity {
         btnPre.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                index --;
-                if (index < 0){
-                    index = arrayBaiHat.size() - 1;
+                if(tron % 2 == 1){
+                    index = random.nextInt(arrayBaiHat.size());
+                    if (index < 0){
+                        index = arrayBaiHat.size() - 1;
+                    }
+                    if (mediaPlayer.isPlaying()){
+                        mediaPlayer.stop();
+                    }
+                    PlayMusic();
+                    mediaPlayer.start();
+                    btnPlay.setImageResource(R.drawable.pause);
+                    music_compact.startAnimation(animation);
+                    SetTimeEnd();
+                    UpdateTime();
+                }else{
+                    index --;
+                    if (index < 0){
+                        index = arrayBaiHat.size() - 1;
+                    }
+                    if (mediaPlayer.isPlaying()){
+                        mediaPlayer.stop();
+                    }
+                    PlayMusic();
+                    mediaPlayer.start();
+                    btnPlay.setImageResource(R.drawable.pause);
+                    music_compact.startAnimation(animation);
+                    SetTimeEnd();
+                    UpdateTime();
                 }
-                if (mediaPlayer.isPlaying()){
-                    mediaPlayer.stop();
-                }
-                PlayMusic();
-                mediaPlayer.start();
-                btnPlay.setImageResource(R.drawable.pause);
-                music_compact.startAnimation(animation);
-                SetTimeEnd();
-                UpdateTime();
             }
         });
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                index ++;
-                if(index > arrayBaiHat.size() - 1){
-                    index = 0;
+                if(tron % 2 == 1){
+                    index = random.nextInt(arrayBaiHat.size());
+                    if(index > arrayBaiHat.size() - 1){
+                        index = 0;
+                    }
+                    if(mediaPlayer.isPlaying()){
+                        mediaPlayer.stop();
+                    }
+                    PlayMusic();
+                    mediaPlayer.start();
+                    btnPlay.setImageResource(R.drawable.pause);
+                    music_compact.startAnimation(animation);
+                    SetTimeEnd();
+                    UpdateTime();
+                }else{
+                    index ++;
+                    if(index > arrayBaiHat.size() - 1){
+                        index = 0;
+                    }
+                    if(mediaPlayer.isPlaying()){
+                        mediaPlayer.stop();
+                    }
+                    PlayMusic();
+                    mediaPlayer.start();
+                    btnPlay.setImageResource(R.drawable.pause);
+                    music_compact.startAnimation(animation);
+                    SetTimeEnd();
+                    UpdateTime();
                 }
-                if(mediaPlayer.isPlaying()){
-                    mediaPlayer.stop();
-                }
-                PlayMusic();
-                mediaPlayer.start();
-                btnPlay.setImageResource(R.drawable.pause);
-                music_compact.startAnimation(animation);
-                SetTimeEnd();
-                UpdateTime();
             }
         });
         btnPlay.setOnClickListener(new View.OnClickListener(){
@@ -132,7 +164,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
     private void UpdateTime(){
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
