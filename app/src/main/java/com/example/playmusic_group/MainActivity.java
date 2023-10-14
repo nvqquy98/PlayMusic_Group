@@ -41,38 +41,69 @@ public class MainActivity extends AppCompatActivity {
         btnPre.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                index --;
-
-                if (index < 0){
-                    index = arrayBaiHat.size() - 1;
+                if(tron == 1){
+                    index = random.nextInt(arrayBaiHat.size());
+                    if (index < 0){
+                        index = arrayBaiHat.size() - 1;
+                    }
+                    if (mediaPlayer.isPlaying()){
+                        mediaPlayer.stop();
+                    }
+                    PlayMusic();
+                    mediaPlayer.start();
+                    btnPlay.setImageResource(R.drawable.pause);
+                    music_compact.startAnimation(animation);
+                    SetTimeEnd();
+                    UpdateTime();
+                }else{
+                    index --;
+                    if (index < 0){
+                        index = arrayBaiHat.size() - 1;
+                    }
+                    if (mediaPlayer.isPlaying()){
+                        mediaPlayer.stop();
+                    }
+                    PlayMusic();
+                    mediaPlayer.start();
+                    btnPlay.setImageResource(R.drawable.pause);
+                    music_compact.startAnimation(animation);
+                    SetTimeEnd();
+                    UpdateTime();
                 }
-                if (mediaPlayer.isPlaying()){
-                    mediaPlayer.stop();
-                }
-                PlayMusic();
-                mediaPlayer.start();
-                btnPlay.setImageResource(R.drawable.pause);
-                music_compact.startAnimation(animation);
-                SetTimeEnd();
-                UpdateTime();
             }
         });
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                index ++;
-                if(index > arrayBaiHat.size() - 1){
-                    index = 0;
+                if(tron == 1){
+                    index = random.nextInt(arrayBaiHat.size());
+                    if(index > arrayBaiHat.size() - 1){
+                        index = 0;
+                    }
+                    if(mediaPlayer.isPlaying()){
+                        mediaPlayer.stop();
+                    }
+                    PlayMusic();
+                    mediaPlayer.start();
+                    btnPlay.setImageResource(R.drawable.pause);
+                    music_compact.startAnimation(animation);
+                    SetTimeEnd();
+                    UpdateTime();
+                }else{
+                    index ++;
+                    if(index > arrayBaiHat.size() - 1){
+                        index = 0;
+                    }
+                    if(mediaPlayer.isPlaying()){
+                        mediaPlayer.stop();
+                    }
+                    PlayMusic();
+                    mediaPlayer.start();
+                    btnPlay.setImageResource(R.drawable.pause);
+                    music_compact.startAnimation(animation);
+                    SetTimeEnd();
+                    UpdateTime();
                 }
-                if(mediaPlayer.isPlaying()){
-                    mediaPlayer.stop();
-                }
-                PlayMusic();
-                mediaPlayer.start();
-                btnPlay.setImageResource(R.drawable.pause);
-                music_compact.startAnimation(animation);
-                SetTimeEnd();
-                UpdateTime();
             }
         });
         btnPlay.setOnClickListener(new View.OnClickListener(){
@@ -95,12 +126,14 @@ public class MainActivity extends AppCompatActivity {
         btnLap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lap += 1;
-                if (lap % 3 == 1){
+                if (lap == 0){
+                    lap = 1;
                     btnLap.setImageResource(R.drawable.lap_on);
-                } else if (lap % 3 == 2) {
+                } else if (lap == 1) {
+                    lap = 2;
                     btnLap.setImageResource(R.drawable.lap_mot);
-                } else {
+                } else if(lap == 2) {
+                    lap = 0;
                     btnLap.setImageResource(R.drawable.lap_off);
                 }
             }
@@ -108,10 +141,11 @@ public class MainActivity extends AppCompatActivity {
         btnTron.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tron += 1;
-                if(tron % 2 == 1){
+                if(tron == 0){
+                    tron = 1;
                     btnTron.setImageResource(R.drawable.tron_bai_on);
-                }else {
+                }else if(tron == 1) {
+                    tron = 0;
                     btnTron.setImageResource(R.drawable.tron_bai_off);
                 }
             }
@@ -133,7 +167,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
     private void UpdateTime(){
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -145,7 +178,8 @@ public class MainActivity extends AppCompatActivity {
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        if(lap % 3 == 1 && tron % 2 == 0){
+                        if(tron == 1){
+                            index = random.nextInt(arrayBaiHat.size());
                             index ++;
                             if(index > arrayBaiHat.size() - 1){
                                 index = 0;
@@ -158,55 +192,28 @@ public class MainActivity extends AppCompatActivity {
                             btnPlay.setImageResource(R.drawable.pause);
                             SetTimeEnd();
                             UpdateTime();
-                        }
-                        if(lap % 3 == 1 && tron % 2 == 1){
-                            index = random.nextInt(arrayBaiHat.size());
-                            if(index > arrayBaiHat.size() - 1){
-                                index = 0;
-                            }
-                            if(mediaPlayer.isPlaying()){
+                        }else if (tron == 0){
+                            if(lap == 0){
+                                mediaPlayer.start();
+                                btnPlay.setImageResource(R.drawable.play);
+                                music_compact.clearAnimation();
                                 mediaPlayer.stop();
+                            } else if (lap == 1) {
+                                index ++;
+                                if(index > arrayBaiHat.size() - 1){
+                                    index = 0;
+                                }
+                                if(mediaPlayer.isPlaying()){
+                                    mediaPlayer.stop();
+                                }
+                                PlayMusic();
+                                mediaPlayer.start();
+                                btnPlay.setImageResource(R.drawable.pause);
+                                SetTimeEnd();
+                                UpdateTime();
+                            } else if (lap == 2) {
+                                mediaPlayer.start();
                             }
-                            PlayMusic();
-                            mediaPlayer.start();
-                            btnPlay.setImageResource(R.drawable.pause);
-                            SetTimeEnd();
-                            UpdateTime();
-                        }
-                        if(lap % 3 == 2 && tron % 2 == 0){
-                            mediaPlayer.start();
-                        }
-                        if(lap % 3 == 2 && tron % 2 == 1){
-                            index = random.nextInt(arrayBaiHat.size());
-                            if(index > arrayBaiHat.size() - 1){
-                                index = 0;
-                            }
-                            if(mediaPlayer.isPlaying()){
-                                mediaPlayer.stop();
-                            }
-                            PlayMusic();
-                            mediaPlayer.start();
-                            btnPlay.setImageResource(R.drawable.pause);
-                            SetTimeEnd();
-                            UpdateTime();
-                        }
-                        if(lap % 3 == 0 && tron % 2 == 0){
-                            btnPlay.setImageResource(R.drawable.play);
-                            music_compact.clearAnimation();
-                        }
-                        if(lap % 3 == 0 && tron % 2 == 1){
-                            index = random.nextInt(arrayBaiHat.size());
-                            if(index > arrayBaiHat.size() - 1){
-                                index = 0;
-                            }
-                            if(mediaPlayer.isPlaying()){
-                                mediaPlayer.stop();
-                            }
-                            PlayMusic();
-                            mediaPlayer.start();
-                            btnPlay.setImageResource(R.drawable.pause);
-                            SetTimeEnd();
-                            UpdateTime();
                         }
                     }
                 });
