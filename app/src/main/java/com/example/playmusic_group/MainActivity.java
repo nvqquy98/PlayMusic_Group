@@ -259,6 +259,6 @@ public class MainActivity extends AppCompatActivity {
         btnTron         = (ImageButton) findViewById(R.id.buttonNgauNhien);
         btnLap          = (ImageButton) findViewById(R.id.buttonLap);
         music_compact   = (ImageView) findViewById(R.id.musicCompact);
-
     }
+    //Day la dien nguyen web
 }
