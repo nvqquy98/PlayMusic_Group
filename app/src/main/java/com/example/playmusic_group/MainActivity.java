@@ -281,7 +281,6 @@ public class MainActivity extends AppCompatActivity {
         btnLap = (ImageButton) findViewById(R.id.buttonLap);
         music_compact = (ImageView) findViewById(R.id.musicCompact);
         btnSetting = (ImageButton) findViewById(R.id.buttonSetting);
-        // Test code tu Ubuntu
     }
 
     private void showSetting() {
