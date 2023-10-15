@@ -6,4 +6,10 @@
     </style>
 
     <style name="Theme.PlayMusic_Group" parent="Base.Theme.PlayMusic_Group" />
+
+    <style name="CustomSwitch" parent="Theme.AppCompat.Light">
+        <item name="colorControlActivated">#C95E5E</item>
+        <item name="colorSwitchThumbNormal">#565656</item>
+        <item name="android:colorForeground">#383838</item>
+    </style>
 </resources>
