@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">PlayMusic_Group</string>
+    <string name="eq">Equalizer</string>
 </resources>
