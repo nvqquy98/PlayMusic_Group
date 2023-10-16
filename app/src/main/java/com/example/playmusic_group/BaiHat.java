@@ -7,16 +7,27 @@ public class BaiHat {
     private String TenCaSi;
     private int File;
 
+    private  int Id;
 
     public String getTenCaSi() {
         return TenCaSi;
     }
 
+
+
     public void setTenCaSi(String tenCaSi) {
         TenCaSi = tenCaSi;
     }
 
+
     public BaiHat(String tenBaiHat, String tenCaSi, int file) {
+        TenBaiHat = tenBaiHat;
+        TenCaSi = tenCaSi;
+        File = file;
+    }
+
+    public BaiHat(int id, String tenBaiHat, String tenCaSi, int file) {
+        Id = id;
         TenBaiHat = tenBaiHat;
         TenCaSi = tenCaSi;
         File = file;
@@ -36,5 +47,13 @@ public class BaiHat {
 
     public void setTenBaiHat(String tenBaiHat) {
         TenBaiHat = tenBaiHat;
+    }
+
+    public int getId() {
+        return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
     }
 }

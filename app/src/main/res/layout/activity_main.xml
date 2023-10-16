@@ -13,7 +13,7 @@
         android:layout_height="48dp"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="17dp"
         android:background="@null"
         android:padding="2dp"
         android:scaleType="centerInside"
@@ -164,5 +164,19 @@
         android:layout_marginBottom="370dp"
         android:scaleType="centerInside"
         app:srcCompat="@drawable/music_compact_ground" />
+
+    <ImageButton
+        android:id="@+id/buttonList"
+        android:layout_width="31dp"
+        android:layout_height="31dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="17dp"
+        android:layout_marginTop="17dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@null"
+        android:src="@drawable/baseline_view_list_light" />
 
 </RelativeLayout>
