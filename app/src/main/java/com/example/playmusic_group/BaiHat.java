@@ -1,8 +1,9 @@
 package com.example.playmusic_group;
 
 import java.io.File;
+import java.io.Serializable;
 
-public class BaiHat {
+public class BaiHat implements Serializable {
     private String TenBaiHat;
     private String TenCaSi;
     private int File;

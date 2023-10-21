@@ -286,7 +286,9 @@ public class MainActivity extends AppCompatActivity {
     private void showList() {
         Intent intentActiveList = new Intent(this, List.class);
         int id = this.arrayBaiHat.get(index).getId();
+        BaiHat baiHat = this.arrayBaiHat.get(index);
         intentActiveList.putExtra("id",id);
+        intentActiveList.putExtra("baiHat",baiHat);
         startActivity(intentActiveList);
     }
 

@@ -7,10 +7,11 @@ import java.util.ArrayList;
 
 public class DataMusic{
 
+    public ArrayList<BaiHat> arrayBaiHat;
     public  DataMusic(){
         AddBaiHat();
     }
-    public ArrayList<BaiHat> arrayBaiHat;
+
 
     public void AddBaiHat() {
         arrayBaiHat = new ArrayList<>();

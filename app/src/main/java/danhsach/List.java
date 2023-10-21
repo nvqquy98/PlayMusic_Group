@@ -1,5 +1,7 @@
 package danhsach;
 
+import static com.example.playmusic_group.R.id.listViewPlaying;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -19,7 +21,7 @@ import context.DataMusic;
 public class List extends AppCompatActivity {
     private DataMusic data = new DataMusic();
     private ListView _listView;
-
+    private ListView _listViewPlaying;
     ImageButton btnBackHome;
     ArrayList<BaiHat> arrayBaiHat = data.arrayBaiHat;
     @Override
@@ -29,6 +31,10 @@ public class List extends AppCompatActivity {
         _listView = (ListView)findViewById(R.id.listView);
         ListBaiHatAdapter adapter = new ListBaiHatAdapter(this, arrayBaiHat);
         _listView.setAdapter(adapter);
+
+        _listViewPlaying = (ListView)findViewById(R.id.listViewPlaying);
+        ListBaiHatAdapter adapter_playing = new ListBaiHatAdapter(this, arrayBaiHat);
+        _listViewPlaying.setAdapter(adapter_playing);
         anhXa();
         btnBackHome.setOnClickListener(view -> {
             backHome();
