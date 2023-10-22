@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -13,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.playmusic_group.equalizer.DialogEqualizerFragment;
 
@@ -32,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView music_compact;
     MediaPlayer mediaPlayer;
     Animation animation;
-    int index = 0;
+    int playId = 0;
     int lap = 0;
     int tron = 0;
     Random random = new Random();
@@ -43,7 +45,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         AnhXa();
+
+        Intent intent = getIntent();
+        playId = intent.getIntExtra("playId", 0);
+        if(playId > 0){
+            Log.d("id", String.valueOf(playId));
+        }
+        else{
+            playId = 1;
+        }
         PlayMusic();
+        mediaPlayer = new MediaPlayer();
         animation = AnimationUtils.loadAnimation(this, R.anim.rotate);
         settingFragment = DialogEqualizerFragment.newBuilder()
                 .setAudioSessionId(mediaPlayer.getAudioSessionId())
@@ -58,37 +70,16 @@ public class MainActivity extends AppCompatActivity {
             showSetting();
         });
 
+
+
         btnPre.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (tron == 1) {
-                    index = random.nextInt(arrayBaiHat.size());
-                    if (index < 0) {
-                        index = arrayBaiHat.size() - 1;
-                    }
-                    if (mediaPlayer.isPlaying()) {
-                        mediaPlayer.stop();
-                    }
-                    PlayMusic();
-                    mediaPlayer.start();
-                    btnPlay.setImageResource(R.drawable.pause);
-                    music_compact.startAnimation(animation);
-                    SetTimeEnd();
-                    UpdateTime();
-                } else {
-                    index--;
-                    if (index < 0) {
-                        index = arrayBaiHat.size() - 1;
-                    }
-                    if (mediaPlayer.isPlaying()) {
-                        mediaPlayer.stop();
-                    }
-                    PlayMusic();
-                    mediaPlayer.start();
-                    btnPlay.setImageResource(R.drawable.pause);
-                    music_compact.startAnimation(animation);
-                    SetTimeEnd();
-                    UpdateTime();
+                    playRandom();
+                } else
+                {
+                    playNormal(false);
                 }
             }
         });
@@ -96,33 +87,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (tron == 1) {
-                    index = random.nextInt(arrayBaiHat.size());
-                    if (index > arrayBaiHat.size() - 1) {
-                        index = 0;
-                    }
-                    if (mediaPlayer.isPlaying()) {
-                        mediaPlayer.stop();
-                    }
-                    PlayMusic();
-                    mediaPlayer.start();
-                    btnPlay.setImageResource(R.drawable.pause);
-                    music_compact.startAnimation(animation);
-                    SetTimeEnd();
-                    UpdateTime();
-                } else {
-                    index++;
-                    if (index > arrayBaiHat.size() - 1) {
-                        index = 0;
-                    }
-                    if (mediaPlayer.isPlaying()) {
-                        mediaPlayer.stop();
-                    }
-                    PlayMusic();
-                    mediaPlayer.start();
-                    btnPlay.setImageResource(R.drawable.pause);
-                    music_compact.startAnimation(animation);
-                    SetTimeEnd();
-                    UpdateTime();
+                    playRandom();
+                } else
+                {
+                    playNormal(true);
                 }
             }
         });
@@ -204,39 +172,20 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         if (tron == 1) {
-                            index = random.nextInt(arrayBaiHat.size());
-                            index++;
-                            if (index > arrayBaiHat.size() - 1) {
-                                index = 0;
-                            }
-                            if (mediaPlayer.isPlaying()) {
-                                mediaPlayer.stop();
-                            }
-                            PlayMusic();
-                            mediaPlayer.start();
-                            btnPlay.setImageResource(R.drawable.pause);
-                            SetTimeEnd();
-                            UpdateTime();
+                            playRandom();
                         } else if (tron == 0) {
                             if (lap == 0) {
+                                if (mediaPlayer.isPlaying()) {
+                                    mediaPlayer.stop();
+                                }
                                 mediaPlayer.start();
                                 btnPlay.setImageResource(R.drawable.play);
                                 music_compact.clearAnimation();
                                 mediaPlayer.stop();
                             } else if (lap == 1) {
-                                index++;
-                                if (index > arrayBaiHat.size() - 1) {
-                                    index = 0;
-                                }
-                                if (mediaPlayer.isPlaying()) {
-                                    mediaPlayer.stop();
-                                }
-                                PlayMusic();
-                                mediaPlayer.start();
-                                btnPlay.setImageResource(R.drawable.pause);
-                                SetTimeEnd();
-                                UpdateTime();
-                            } else if (lap == 2) {
+                                playNormal(true);
+                            }
+                            else if (lap == 2) {
                                 mediaPlayer.start();
                             }
                         }
@@ -254,9 +203,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void PlayMusic() {
-        mediaPlayer = MediaPlayer.create(MainActivity.this, arrayBaiHat.get(index).getFile());
-        txtTitle.setText(arrayBaiHat.get(index).getTenBaiHat());
-        txtCasi.setText(arrayBaiHat.get(index).getTenCaSi());
+        if(getById(playId).getFile() > 0){
+            mediaPlayer = MediaPlayer.create(MainActivity.this, getById(playId).getFile());
+            txtTitle.setText(getById(playId).getTenBaiHat());
+            txtCasi.setText(getById(playId).getTenCaSi());
+        }
     }
 
 
@@ -285,14 +236,78 @@ public class MainActivity extends AppCompatActivity {
 
     private void showList() {
         Intent intentActiveList = new Intent(this, List.class);
-        int id = this.arrayBaiHat.get(index).getId();
-        BaiHat baiHat = this.arrayBaiHat.get(index);
+        int id = playId;
         intentActiveList.putExtra("id",id);
-        intentActiveList.putExtra("baiHat",baiHat);
         startActivity(intentActiveList);
     }
 
+    private BaiHat getById(int id) {
+        for (BaiHat baiHat : arrayBaiHat) {
+            if (baiHat.getId() == id) {
+                return baiHat;
+            }
+        }
+        return null;
+    }
 
+    private int getRandomId() {
+        Random random = new Random();
+        int randomIndex = random.nextInt(arrayBaiHat.size());
+        return arrayBaiHat.get(randomIndex).getId();
+    }
+
+    private  void  TronBai(){
+
+    }
+
+
+    private void  playRandom(){
+        int idRandom = getRandomId();
+        playId = idRandom;
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+        }
+        playStart();
+    }
+
+    private  void playNormal(boolean tien){
+        if(tien == false){
+            playId --;
+            if(playId < 1){
+                playId = getMaxId();
+            }
+        }
+        else{
+            playId ++;
+            if(playId > getMaxId()){
+                playId = 1;
+            }
+        }
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+        }
+        playStart();
+    }
+
+    public void playStart(){
+        PlayMusic();
+        mediaPlayer.start();
+        btnPlay.setImageResource(R.drawable.pause);
+        music_compact.startAnimation(animation);
+        SetTimeEnd();
+        UpdateTime();
+    }
+
+    private int getMaxId() {
+        int maxId = 1;
+        for (BaiHat baiHat : arrayBaiHat) {
+            int currentId = baiHat.getId();
+            if (currentId > maxId) {
+                maxId = currentId;
+            }
+        }
+        return maxId;
+    }
 
 
 }

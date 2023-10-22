@@ -13,6 +13,7 @@ public class DataMusic{
     }
 
 
+
     public void AddBaiHat() {
         arrayBaiHat = new ArrayList<>();
         arrayBaiHat.add(new BaiHat(1,"Việt Nam Những Chuyến Đi", "Vicky Nhung", R.raw.viet_nam_va_nhung_chuyen_di));

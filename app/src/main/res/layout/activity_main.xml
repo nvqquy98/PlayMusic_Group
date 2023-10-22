@@ -177,6 +177,6 @@
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:background="@null"
-        android:src="@drawable/baseline_view_list_light" />
+        android:src="@drawable/baseline_view_list_24" />
 
 </RelativeLayout>
