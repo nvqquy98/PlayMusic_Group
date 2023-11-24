@@ -1,31 +1,42 @@
 package com.example.playmusic_group;
-import android.content.Intent;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import com.example.playmusic_group.Alarm.AlarmReceiver;
 import com.example.playmusic_group.equalizer.DialogEqualizerFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Random;
 
 import context.DataMusic;
 import danhsach.List;
 
 public class MainActivity extends AppCompatActivity {
+
     DataMusic data = new DataMusic();
     ArrayList<BaiHat> arrayBaiHat = data.arrayBaiHat;
     TextView txtTitle, txtCasi, txtTimeStart, txtTimeEnd;
@@ -34,11 +45,20 @@ public class MainActivity extends AppCompatActivity {
     ImageView music_compact;
     MediaPlayer mediaPlayer;
     Animation animation;
+    private Button btnScheduleAlarm;
     int playId = 0;
     int lap = 0;
     int tron = 0;
+    private int selectedHour;
+    private int selectedMinute;
+
     Random random = new Random();
     DialogEqualizerFragment settingFragment;
+    private static final int ALARM_REQUEST_CODE = 123;
+
+//    public static MediaPlayer getMediaPlayer() {
+//        return mediaPlayer;
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +68,9 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         playId = intent.getIntExtra("playId", 0);
-        if(playId > 0){
+        if (playId > 0) {
             Log.d("id", String.valueOf(playId));
-        }
-        else{
+        } else {
             playId = 1;
         }
         PlayMusic();
@@ -65,11 +84,13 @@ public class MainActivity extends AppCompatActivity {
                 .darkColor(ContextCompat.getColor(this, R.color.primaryDarkColor))
                 .setAccentColor(ContextCompat.getColor(this, R.color.secondaryColor))
                 .build();
-
+//        checkExistingAlarm();
         btnSetting.setOnClickListener(view -> {
             showSetting();
         });
-
+        btnScheduleAlarm.setOnClickListener(view -> {
+            showTimePickerDialog();
+        });
 
 
         btnPre.setOnClickListener(new View.OnClickListener() {
@@ -77,23 +98,23 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (tron == 1) {
                     playRandom();
-                } else
-                {
+                } else {
                     playNormal(false);
                 }
             }
         });
+
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (tron == 1) {
                     playRandom();
-                } else
-                {
+                } else {
                     playNormal(true);
                 }
             }
         });
+
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -111,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 UpdateTime();
             }
         });
+
         btnLap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
         btnTron.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,15 +161,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
         skBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
 
             @Override
@@ -158,6 +180,11 @@ public class MainActivity extends AppCompatActivity {
         btnList.setOnClickListener(view -> {
             showList();
         });
+    }
+
+
+    private int generateUniqueCode() {
+        return (int) System.currentTimeMillis(); // Sử dụng thời gian hiện tại làm mã duy nhất
     }
 
     private void UpdateTime() {
@@ -184,8 +211,7 @@ public class MainActivity extends AppCompatActivity {
                                 mediaPlayer.stop();
                             } else if (lap == 1) {
                                 playNormal(true);
-                            }
-                            else if (lap == 2) {
+                            } else if (lap == 2) {
                                 mediaPlayer.start();
                             }
                         }
@@ -203,29 +229,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void PlayMusic() {
-        if(getById(playId).getFile() > 0){
+        if (getById(playId).getFile() > 0) {
             mediaPlayer = MediaPlayer.create(MainActivity.this, getById(playId).getFile());
             txtTitle.setText(getById(playId).getTenBaiHat());
             txtCasi.setText(getById(playId).getTenCaSi());
         }
     }
 
-
-
     private void AnhXa() {
-        txtTitle = (TextView) findViewById(R.id.textViewTitle);
-        txtCasi = (TextView) findViewById(R.id.textViewSinger);
-        txtTimeStart = (TextView) findViewById(R.id.textViewTimeStart);
-        txtTimeEnd = (TextView) findViewById(R.id.textViewTimeEnd);
-        skBar = (SeekBar) findViewById(R.id.seekBar);
-        btnPre = (ImageButton) findViewById(R.id.buttonPre);
-        btnPlay = (ImageButton) findViewById(R.id.buttonPlay);
-        btnNext = (ImageButton) findViewById(R.id.buttonNext);
-        btnTron = (ImageButton) findViewById(R.id.buttonNgauNhien);
-        btnLap = (ImageButton) findViewById(R.id.buttonLap);
-        music_compact = (ImageView) findViewById(R.id.musicCompact);
-        btnSetting = (ImageButton) findViewById(R.id.buttonSetting);
-        btnList = (ImageButton) findViewById(R.id.buttonList);
+        txtTitle = findViewById(R.id.textViewTitle);
+        txtCasi = findViewById(R.id.textViewSinger);
+        txtTimeStart = findViewById(R.id.textViewTimeStart);
+        txtTimeEnd = findViewById(R.id.textViewTimeEnd);
+        skBar = findViewById(R.id.seekBar);
+        btnPre = findViewById(R.id.buttonPre);
+        btnPlay = findViewById(R.id.buttonPlay);
+        btnNext = findViewById(R.id.buttonNext);
+        btnTron = findViewById(R.id.buttonNgauNhien);
+        btnLap = findViewById(R.id.buttonLap);
+        music_compact = findViewById(R.id.musicCompact);
+        btnSetting = findViewById(R.id.buttonSetting);
+        btnList = findViewById(R.id.buttonList);
+        btnScheduleAlarm = findViewById(R.id.btnScheduleAlarm);
+
     }
 
     private void showSetting() {
@@ -237,7 +263,7 @@ public class MainActivity extends AppCompatActivity {
     private void showList() {
         Intent intentActiveList = new Intent(this, List.class);
         int id = playId;
-        intentActiveList.putExtra("id",id);
+        intentActiveList.putExtra("id", id);
         startActivity(intentActiveList);
     }
 
@@ -256,12 +282,10 @@ public class MainActivity extends AppCompatActivity {
         return arrayBaiHat.get(randomIndex).getId();
     }
 
-    private  void  TronBai(){
-
+    private void TronBai() {
     }
 
-
-    private void  playRandom(){
+    private void playRandom() {
         int idRandom = getRandomId();
         playId = idRandom;
         if (mediaPlayer.isPlaying()) {
@@ -270,16 +294,15 @@ public class MainActivity extends AppCompatActivity {
         playStart();
     }
 
-    private  void playNormal(boolean tien){
-        if(tien == false){
-            playId --;
-            if(playId < 1){
+    private void playNormal(boolean tien) {
+        if (tien == false) {
+            playId--;
+            if (playId < 1) {
                 playId = getMaxId();
             }
-        }
-        else{
-            playId ++;
-            if(playId > getMaxId()){
+        } else {
+            playId++;
+            if (playId > getMaxId()) {
                 playId = 1;
             }
         }
@@ -289,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
         playStart();
     }
 
-    public void playStart(){
+    public void playStart() {
         PlayMusic();
         mediaPlayer.start();
         btnPlay.setImageResource(R.drawable.pause);
@@ -309,5 +332,89 @@ public class MainActivity extends AppCompatActivity {
         return maxId;
     }
 
+    private void showTimePickerDialog() {
+        // Get the current time
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        // Create a TimePickerDialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        // Handle the selected time (e.g., schedule alarm)
+                        handleSelectedTime(hourOfDay, minute);
+                    }
+                }, hour, minute, false);
+
+        // Show the dialog
+        timePickerDialog.show();
+    }
+
+
+    private void checkExistingAlarm(int hourOfDay, int minute) {
+        // Check if there's an existing alarm
+        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+        boolean alarmUp = (PendingIntent.getBroadcast(this, ALARM_REQUEST_CODE, alarmIntent, PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE) != null);
+
+        if (!alarmUp) {
+            // If no existing alarm, schedule a new one with the specified time
+            scheduleAlarm(hourOfDay, minute);
+        }
+    }
+
+
+    private void scheduleAlarm(int hourOfDay, int minute) {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        // Lấy thời gian hiện tại
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+
+        // Kiểm tra xem thời gian đã chọn có phải là thời điểm trong quá khứ hay không
+        if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
+            // Nếu là thời điểm trong quá khứ, thêm 1 ngày để đặt hẹn giờ cho ngày mai
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        Log.d("Giờ hẹn ", "Scheduled for: " + calendar.getTime());
+
+        // Tạo một intent để phát sóng khi hẹn giờ đến
+        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+        // Create an intent to be broadcast when the alarm triggers
+        int uniqueCode = generateUniqueCode();
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, uniqueCode, alarmIntent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
+
+        // Đặt hẹn giờ
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Sử dụng hàm setExactAndAllowWhileIdle trên Android 6.0 trở lên
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        } else {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        }
+    }
+
+    // Sửa lại hàm handleSelectedTime để nhận thời gian từ TimePickerDialog
+    private void handleSelectedTime(int hourOfDay, int minute) {
+        // Handle the selected time (e.g., schedule alarm)
+        long selectedTimeMillis = getTimeInMillis(hourOfDay, minute);
+
+
+            String time = String.format("%02d:%02d", hourOfDay, minute);
+            Toast.makeText(this, "Giờ bạn đã hẹn: " + time, Toast.LENGTH_SHORT).show();
+
+            scheduleAlarm(hourOfDay, minute);
+      
+    }
+
+    private long getTimeInMillis(int hourOfDay, int minute) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+        return calendar.getTimeInMillis();
+    }
 
 }
