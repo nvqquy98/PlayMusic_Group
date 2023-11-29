@@ -74,7 +74,8 @@ public class MainActivity extends AppCompatActivity {
             playId = 1;
         }
         PlayMusic();
-        mediaPlayer = new MediaPlayer();
+//        mediaPlayer = new MediaPlayer();
+
         animation = AnimationUtils.loadAnimation(this, R.anim.rotate);
         settingFragment = DialogEqualizerFragment.newBuilder()
                 .setAudioSessionId(mediaPlayer.getAudioSessionId())
@@ -118,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 if (mediaPlayer.isPlaying()) {
                     mediaPlayer.pause();
                     btnPlay.setImageResource(R.drawable.play);
