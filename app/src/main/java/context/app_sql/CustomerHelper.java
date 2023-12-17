@@ -1,5 +1,6 @@
 package context.app_sql;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -49,7 +50,7 @@ public class CustomerHelper extends SQLiteOpenHelper {
         List<Customer> items = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT id, name, username, password from " +  TABLE_NAME
+        Cursor cursor = db.rawQuery("SELECT id, name, username, password, statusid from " +  TABLE_NAME
                 + " Where statusid > 0", null);
 
         cursor.moveToFirst();
@@ -71,8 +72,28 @@ public class CustomerHelper extends SQLiteOpenHelper {
     public Customer getCustomerByID(int ID) {
         Customer item = null;
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT id, name, username, password from "+ TABLE_NAME +" where id = ?",
+        Cursor cursor = db.rawQuery("SELECT id, name, username, password, statusid from "+ TABLE_NAME +" where id = ?",
                 new String[]{ID + ""});
+
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            item = new Customer(
+                    cursor.getInt(0),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getString(3),
+                    cursor.getInt(4));
+        }
+        cursor.close();
+        return item;
+    }
+
+    public Customer getCustomerByUsername(String username) {
+        username = username.toLowerCase();
+        Customer item = null;
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT id, name, username, password, statusid from "+ TABLE_NAME +" where username = ?",
+                new String[]{username });
 
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();
@@ -90,7 +111,7 @@ public class CustomerHelper extends SQLiteOpenHelper {
     public Customer getCustomerForLogin(AppLogin appLogin) {
         Customer item = null;
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT id, name, username, password from "+ TABLE_NAME
+        Cursor cursor = db.rawQuery("SELECT id, name, username, password, statusid from "+ TABLE_NAME
                         +" where username = ? and password = ?",
                 new String[]{appLogin.Username,appLogin.Password });
 
@@ -107,23 +128,26 @@ public class CustomerHelper extends SQLiteOpenHelper {
         return item;
     }
 
-    void updateCustomer(Customer entity) {
+    public void updateCustomer(Customer entity) {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("UPDATE " + TABLE_NAME + " SET name=?, password = ?, stautusid = ? where id = ?",
                 new String[]{entity.getName(), entity.getUserName(), entity.getStatusId() + "", entity.getId() + "",});
     }
 
 
-    void insertCustomer(Customer entity) {
+    public void insertCustomer(Customer entity) {
+        entity.setUserName(entity.getUserName().toLowerCase()) ;
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("INSERT INTO " + TABLE_NAME +" (name, username, password, statusid ) VALUES (?,?,?,1)",
                 new String[]{entity.getName(), entity.getUserName(), entity.getPassword()});
     }
 
 
-    void deleteCustomerByID(int id) {
+    public  void deleteCustomerByID(int id) {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_NAME +" where id = ?", new String[]{String.valueOf(id)});
     }
+
+
 
 }
