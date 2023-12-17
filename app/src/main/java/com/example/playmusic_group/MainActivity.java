@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.playmusic_group.Alarm.AlarmReceiver;
+import context.app_activity.LoginActivity;
 import com.example.playmusic_group.equalizer.DialogEqualizerFragment;
 
 import java.text.SimpleDateFormat;
@@ -36,7 +38,7 @@ import context.DataMusic;
 import danhsach.List;
 
 public class MainActivity extends AppCompatActivity {
-
+    private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
     DataMusic data = new DataMusic();
     ArrayList<BaiHat> arrayBaiHat = data.arrayBaiHat;
     TextView txtTitle, txtCasi, txtTimeStart, txtTimeEnd;
@@ -56,14 +58,34 @@ public class MainActivity extends AppCompatActivity {
     DialogEqualizerFragment settingFragment;
     private static final int ALARM_REQUEST_CODE = 123;
 
-//    public static MediaPlayer getMediaPlayer() {
-//        return mediaPlayer;
-//    }
+
+    private void logoutUser() {
+        SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("username");
+        editor.remove("password");
+        editor.apply();
+        Toast.makeText(MainActivity.this, "Logged out", Toast.LENGTH_SHORT).show();
+
+    }
+    void auth(){
+        SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        String savedUsername = sharedPreferences.getString("username", "");
+
+        if (!savedUsername.isEmpty()) {
+            Toast.makeText(MainActivity.this, "Đã đăng nhập vào tài khoản: " + savedUsername, Toast.LENGTH_SHORT).show();
+        } else {
+            showLogin();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        auth();
+
         AnhXa();
 
         Intent intent = getIntent();
@@ -267,6 +289,11 @@ public class MainActivity extends AppCompatActivity {
         int id = playId;
         intentActiveList.putExtra("id", id);
         startActivity(intentActiveList);
+    }
+
+    private void  showLogin(){
+        Intent intentActiveLogin = new Intent(this, LoginActivity.class);
+        startActivity(intentActiveLogin);
     }
 
     private BaiHat getById(int id) {
