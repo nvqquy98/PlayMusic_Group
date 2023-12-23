@@ -8,12 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -24,7 +25,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.splashscreen.SplashScreen;
 
@@ -32,22 +35,26 @@ import com.example.playmusic_group.Alarm.AlarmReceiver;
 
 import context.app_activity.LoginActivity;
 
+import com.example.playmusic_group.data.AudioFileHandler;
 import com.example.playmusic_group.equalizer.DialogEqualizerFragment;
 import com.example.playmusic_group.play_music_background.MusicConfig;
 import com.example.playmusic_group.play_music_background.MusicService;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Random;
 
-import context.DataMusic;
-import danhsach.List;
+import danhsach.ListMusicActivity;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final String ITEM_SELECTED_INDEX_KEY = "ITEM_SELECTED_INDEX_KEY";
+    private static final int REQUEST_READ_EXTERNAL_STORAGE = 1234;
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
-    DataMusic data = new DataMusic();
-    ArrayList<BaiHat> arrayBaiHat = data.arrayBaiHat;
+    ArrayList<BaiHat> arrayBaiHat = new ArrayList<>();
     TextView txtTitle, txtCasi, txtTimeStart, txtTimeEnd;
     SeekBar skBar;
     ImageButton btnPre, btnPlay, btnNext, btnTron, btnLap, btnSetting, btnList;
@@ -55,14 +62,14 @@ public class MainActivity extends AppCompatActivity {
     MediaPlayer mediaPlayer;
     Animation animation;
     private Button btnScheduleAlarm;
-    int playId = 0;
+    private int currentMusicIndex;
     int lap = 0;
     int tron = 0;
     private int selectedHour;
     private int selectedMinute;
 
     Random random = new Random();
-    DialogEqualizerFragment settingFragment;
+    DialogEqualizerFragment.Builder settingFragment;
     private static final int ALARM_REQUEST_CODE = 123;
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -75,11 +82,9 @@ public class MainActivity extends AppCompatActivity {
                     case MusicConfig.Actions.NEXT_ACTION -> onNextClicked();
                     case MusicConfig.Actions.CANCEL_ACTION -> {
                         mediaPlayer.stop();
-                        stopMusicService();
-                        return;
+                        startMusicService(action);
                     }
                 }
-                startMusicService(action);
             }
         }
     };
@@ -91,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
         editor.remove("password");
         editor.apply();
         Toast.makeText(MainActivity.this, "Logged out", Toast.LENGTH_SHORT).show();
-
     }
 
     void auth() {
@@ -106,33 +110,40 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        int indexNew = intent.getIntExtra(ITEM_SELECTED_INDEX_KEY, 0);
+        if (indexNew >= 0 && indexNew < arrayBaiHat.size()) {
+            currentMusicIndex = indexNew;
+            startMusic();
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SplashScreen.installSplashScreen(this);
         setContentView(R.layout.activity_main);
         auth();
-
-        AnhXa();
-        // Set up an OnPreDrawListener to the root view.
-        Intent intent = getIntent();
-        playId = intent.getIntExtra("playId", 0);
-        if (playId > 0) {
-            Log.d("id", String.valueOf(playId));
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_EXTERNAL_STORAGE);
         } else {
-            playId = 1;
+            initData();
         }
-        PlayMusic();
-//        mediaPlayer = new MediaPlayer();
-
-        animation = AnimationUtils.loadAnimation(this, R.anim.rotate);
+        AnhXa();
         settingFragment = DialogEqualizerFragment.newBuilder()
-                .setAudioSessionId(mediaPlayer.getAudioSessionId())
                 .themeColor(ContextCompat.getColor(this, R.color.primaryColor))
                 .textColor(ContextCompat.getColor(this, R.color.textColor))
                 .accentAlpha(ContextCompat.getColor(this, R.color.playingCardColor))
                 .darkColor(ContextCompat.getColor(this, R.color.primaryDarkColor))
                 .setAccentColor(ContextCompat.getColor(this, R.color.secondaryColor))
-                .build();
+        ;
+        Intent intent = getIntent();
+        currentMusicIndex = intent.getIntExtra(ITEM_SELECTED_INDEX_KEY, 0);
+        if (currentMusicIndex == -1) {
+            currentMusicIndex = 0;
+        }
+
 //        checkExistingAlarm();
         btnSetting.setOnClickListener(view -> {
             showSetting();
@@ -142,9 +153,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        btnPre.setOnClickListener(v -> onPreClicked());
+        btnPre.setOnClickListener(v -> {
+            onPreClicked();
+            startMusicService(MusicConfig.Actions.PREV_ACTION);
+        });
 
-        btnNext.setOnClickListener(v -> onNextClicked());
+        btnNext.setOnClickListener(v -> {
+            onNextClicked();
+            startMusicService(MusicConfig.Actions.NEXT_ACTION);
+        });
 
         btnPlay.setOnClickListener(view -> {
             playMusic();
@@ -194,6 +211,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_READ_EXTERNAL_STORAGE && grantResults.length > 0) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                initData();
+            }
+        }
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         registerReceiver();
@@ -222,6 +249,21 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer.setLooping(false);
         SetTimeEnd();
         UpdateTime();
+    }
+
+    private void initData() {
+        AudioFileHandler audioFileHandler = new AudioFileHandler();
+        List<String> audioFiles = audioFileHandler.getMusicFilesFromDownloads();
+        for (int i = 0; i < audioFiles.size(); i++) {
+            BaiHat musicInfo = audioFileHandler.retrieveMetadata(audioFiles.get(i), i + 1);
+            if (musicInfo != null) {
+                arrayBaiHat.add(musicInfo);
+            }
+        }
+        bindingMusicToView();
+        animation = AnimationUtils.loadAnimation(this, R.anim.rotate);
+        if (mediaPlayer == null) return;
+
     }
 
     private void onPreClicked() {
@@ -262,10 +304,11 @@ public class MainActivity extends AppCompatActivity {
                                 if (mediaPlayer.isPlaying()) {
                                     mediaPlayer.stop();
                                 }
-                                mediaPlayer.start();
                                 btnPlay.setImageResource(R.drawable.play);
                                 music_compact.clearAnimation();
                                 mediaPlayer.stop();
+                                mediaPlayer.reset();
+                                bindingMusicToView();
                             } else if (lap == 1) {
                                 playNormal(true);
                             } else if (lap == 2) {
@@ -285,11 +328,17 @@ public class MainActivity extends AppCompatActivity {
         skBar.setMax(mediaPlayer.getDuration());
     }
 
-    private void PlayMusic() {
-        if (getById(playId).getFile() > 0) {
-            mediaPlayer = MediaPlayer.create(MainActivity.this, getById(playId).getFile());
-            txtTitle.setText(getById(playId).getTenBaiHat());
-            txtCasi.setText(getById(playId).getTenCaSi());
+    private void bindingMusicToView() {
+        if (arrayBaiHat.isEmpty()) return;
+        BaiHat currentMusicSelected = arrayBaiHat.get(currentMusicIndex);
+        if (currentMusicSelected != null && currentMusicSelected.getFilePath() != null) {
+            mediaPlayer = MediaPlayer.create(MainActivity.this, Uri.fromFile(new File(currentMusicSelected.getFilePath())));
+            if (currentMusicSelected.getTenBaiHat() != null) {
+                txtTitle.setText(currentMusicSelected.getTenBaiHat());
+            }
+            if (currentMusicSelected.getTenBaiHat() != null) {
+                txtCasi.setText(currentMusicSelected.getTenCaSi());
+            }
         }
     }
 
@@ -312,14 +361,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showSetting() {
-        if (settingFragment != null) {
-            settingFragment.show(getSupportFragmentManager(), "eq");
+        if (settingFragment != null && mediaPlayer != null) {
+            settingFragment.setAudioSessionId(mediaPlayer.getAudioSessionId()).build().show(getSupportFragmentManager(), "eq");
         }
     }
 
     private void showList() {
-        Intent intentActiveList = new Intent(this, List.class);
-        int id = playId;
+        Intent intentActiveList = new Intent(this, ListMusicActivity.class);
+        int id = arrayBaiHat.get(currentMusicIndex).getId();
         intentActiveList.putExtra("id", id);
         startActivity(intentActiveList);
     }
@@ -348,8 +397,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void playRandom() {
-        int idRandom = getRandomId();
-        playId = idRandom;
+        currentMusicIndex = (new Random()).nextInt(arrayBaiHat.size());
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
         }
@@ -357,15 +405,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void playNormal(boolean tien) {
-        if (tien == false) {
-            playId--;
-            if (playId < 1) {
-                playId = getMaxId();
+        if (!tien) {
+            currentMusicIndex--;
+            if (currentMusicIndex < 0) {
+                currentMusicIndex = arrayBaiHat.size() - 1;
             }
         } else {
-            playId++;
-            if (playId > getMaxId()) {
-                playId = 1;
+            currentMusicIndex++;
+            if (currentMusicIndex > arrayBaiHat.size() - 1) {
+                currentMusicIndex = 0;
             }
         }
         if (mediaPlayer.isPlaying()) {
@@ -375,23 +423,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void playStart() {
-        PlayMusic();
+        bindingMusicToView();
         mediaPlayer.start();
         btnPlay.setImageResource(R.drawable.pause);
         music_compact.startAnimation(animation);
+        startMusicService(MusicConfig.Actions.PLAY_ACTION);
         SetTimeEnd();
         UpdateTime();
-    }
-
-    private int getMaxId() {
-        int maxId = 1;
-        for (BaiHat baiHat : arrayBaiHat) {
-            int currentId = baiHat.getId();
-            if (currentId > maxId) {
-                maxId = currentId;
-            }
-        }
-        return maxId;
     }
 
     private void showTimePickerDialog() {
@@ -483,8 +521,8 @@ public class MainActivity extends AppCompatActivity {
     private Intent getMusicService(String musicAction) {
         Intent intent = new Intent(this, MusicService.class);
         intent.setAction(musicAction);
-        intent.putExtra(MusicConfig.MUSIC_TITLE_KEY, getById(playId).getTenBaiHat());
-        intent.putExtra(MusicConfig.MUSIC_ARTISTS_KEY, getById(playId).getTenCaSi());
+        intent.putExtra(MusicConfig.MUSIC_TITLE_KEY, arrayBaiHat.get(currentMusicIndex).getTenBaiHat());
+        intent.putExtra(MusicConfig.MUSIC_ARTISTS_KEY, arrayBaiHat.get(currentMusicIndex).getTenCaSi());
         return intent;
     }
 
@@ -513,5 +551,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void stopMusicService() {
         stopService(new Intent(this, MusicService.class));
+    }
+
+    private void startMusic() {
+        mediaPlayer.stop();
+        bindingMusicToView();
+        playStart();
     }
 }

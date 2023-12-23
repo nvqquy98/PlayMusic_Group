@@ -1,11 +1,9 @@
 package context.app_activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,7 +19,6 @@ import context.app_data.AppLogin;
 import context.app_data.Customer;
 import context.app_default.AppDefault;
 import context.app_sql.CustomerHelper;
-import danhsach.List;
 
 public class LoginActivity extends AppCompatActivity {
 
