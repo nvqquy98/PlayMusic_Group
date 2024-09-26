@@ -8,12 +8,13 @@ public class BaiHat implements Serializable {
     private String TenCaSi;
     private int File;
 
-    private  int Id;
+    private String filePath;
+
+    private int Id;
 
     public String getTenCaSi() {
         return TenCaSi;
     }
-
 
 
     public void setTenCaSi(String tenCaSi) {
@@ -27,11 +28,25 @@ public class BaiHat implements Serializable {
         File = file;
     }
 
+    public BaiHat(int id, String tenBaiHat, String tenCaSi, String filePath) {
+        TenBaiHat = tenBaiHat;
+        TenCaSi = tenCaSi;
+        this.filePath = filePath;
+    }
+
     public BaiHat(int id, String tenBaiHat, String tenCaSi, int file) {
         Id = id;
         TenBaiHat = tenBaiHat;
         TenCaSi = tenCaSi;
         File = file;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public String getFilePath() {
+        return filePath;
     }
 
     public int getFile() {

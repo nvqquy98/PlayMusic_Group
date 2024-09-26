@@ -1,4 +1,5 @@
 package danhsach;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.content.Intent;
+
 import com.example.playmusic_group.BaiHat;
 import com.example.playmusic_group.MainActivity;
 import com.example.playmusic_group.R;
@@ -20,10 +22,12 @@ public class ListBaiHatAdapter extends BaseAdapter {
     private Activity activity;
 
     private Context context;
-    public ListBaiHatAdapter( Activity activity, ArrayList<BaiHat> list){
+
+    public ListBaiHatAdapter(Activity activity, ArrayList<BaiHat> list) {
         this.list = list;
         this.activity = activity;
     }
+
     @Override
     public int getCount() {
         return list.size();
@@ -55,8 +59,7 @@ public class ListBaiHatAdapter extends BaseAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int baiHatId = (int) v.getTag(); // Lấy ID của bài hát từ tag của view
-                PlayMucicAndBackHome(baiHatId);
+                PlayMucicAndBackHome(i);
             }
         });
 
@@ -64,9 +67,9 @@ public class ListBaiHatAdapter extends BaseAdapter {
     }
 
 
-    private void PlayMucicAndBackHome(int id) {
+    private void PlayMucicAndBackHome(int index) {
         Intent intentActiveHome = new Intent(activity, MainActivity.class);
-        intentActiveHome.putExtra("playId",id);
+        intentActiveHome.putExtra(MainActivity.ITEM_SELECTED_INDEX_KEY, index);
         activity.startActivity(intentActiveHome);
     }
 }
